@@ -8,12 +8,12 @@ const BrandLogo = styled(Typography)(({ theme }) => ({
 
 const LogoPart = styled('span')(({ theme }) => ({
   color: theme.palette.primary.main,
-  fontSize: theme.typography.h1.fontSize,
+  fontSize: theme.typography.h2.fontSize,
 }))
 
 const Logo = () => {
   return (
-    <BrandLogo variant='h1'>
+    <BrandLogo variant='h2'>
       Big<LogoPart>Buy.</LogoPart>
     </BrandLogo>
   )

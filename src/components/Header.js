@@ -2,6 +2,9 @@ import { Stack, Container, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { Link } from 'react-router-dom'
 import { Logo, CartLinkIcon } from '.'
+import { HiOutlineMenuAlt3 } from 'react-icons/hi'
+import { useDispatch } from 'react-redux'
+import { toggleMenu } from '../redux/actions/global'
 
 const HeaderWrapper = styled('header')(({ theme }) => ({
   height: '8rem',
@@ -40,39 +43,74 @@ const HeaderLink = styled(Link)(({ theme }) => ({
   },
 }))
 
+const DesktopHeaderWrapper = styled(Stack)(({ theme }) => ({
+  display: 'block',
+  [theme.breakpoints.down('md')]: {
+    display: 'none',
+  },
+}))
+const MobileHeaderWrapper = styled(Stack)(({ theme }) => ({
+  display: 'none',
+  [theme.breakpoints.down('md')]: {
+    display: 'flex',
+  },
+}))
+
+const MenuIcon = styled(HiOutlineMenuAlt3)`
+  cursor: pointer;
+`
+
 const Header = () => {
+  const dispatch = useDispatch()
+
+  const handleOpenMenu = () => {
+    dispatch(toggleMenu())
+  }
+
   return (
-    <HeaderWrapper>
-      <HeaderContainer>
-        <Stack>
-          <Link to='/'>
-            <Logo />
-          </Link>
-        </Stack>
-        <Stack direction='row' spacing={2}>
-          <HeaderLink to='/'>
-            <Typography variant='subtitle1'>Home</Typography>
-          </HeaderLink>
-          <HeaderLink to='/contact'>
-            <Typography variant='subtitle1'>Contact Us</Typography>
-          </HeaderLink>
-        </Stack>
-        <Stack direction='row' spacing={2}>
-          <HeaderLink to='/login'>
-            <Typography variant='subtitle1'>Login</Typography>
-          </HeaderLink>
-          <HeaderLink to='/register'>
-            <Typography variant='subtitle1'>Register</Typography>
-          </HeaderLink>
-          <HeaderLink to='/order-history'>
-            <Typography variant='subtitle1'>My Orders</Typography>
-          </HeaderLink>
-          <HeaderLink to='/cart'>
-            <CartLinkIcon />
-          </HeaderLink>
-        </Stack>
-      </HeaderContainer>
-    </HeaderWrapper>
+    <>
+      <HeaderWrapper>
+        <HeaderContainer>
+          <Stack>
+            <Link to='/'>
+              <Logo />
+            </Link>
+          </Stack>
+          <DesktopHeaderWrapper>
+            <Stack direction='row' spacing={2}>
+              <HeaderLink to='/'>
+                <Typography variant='subtitle1'>Home</Typography>
+              </HeaderLink>
+              <HeaderLink to='/contact'>
+                <Typography variant='subtitle1'>Contact Us</Typography>
+              </HeaderLink>
+            </Stack>
+          </DesktopHeaderWrapper>
+          <DesktopHeaderWrapper>
+            <Stack direction='row' spacing={2}>
+              <HeaderLink to='/login'>
+                <Typography variant='subtitle1'>Login</Typography>
+              </HeaderLink>
+              <HeaderLink to='/register'>
+                <Typography variant='subtitle1'>Register</Typography>
+              </HeaderLink>
+              <HeaderLink to='/order-history'>
+                <Typography variant='subtitle1'>My Orders</Typography>
+              </HeaderLink>
+              <HeaderLink to='/cart'>
+                <CartLinkIcon />
+              </HeaderLink>
+            </Stack>
+          </DesktopHeaderWrapper>
+          <MobileHeaderWrapper direction='row' spacing={2}>
+            <HeaderLink to='/cart'>
+              <CartLinkIcon />
+            </HeaderLink>
+            <MenuIcon onClick={handleOpenMenu} size={20} color='#fff' />
+          </MobileHeaderWrapper>
+        </HeaderContainer>
+      </HeaderWrapper>
+    </>
   )
 }
 

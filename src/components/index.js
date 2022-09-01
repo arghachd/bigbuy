@@ -1,2 +1,6 @@
 export { default as Logo } from './Logo'
 export { default as CartLinkIcon } from './CartLinkIcon'
+export { default as Sidebar } from './Sidebar'
+export { default as Header } from './Header'
+export { default as Footer } from './Footer'
+export { default as Backdrop } from './Backdrop'

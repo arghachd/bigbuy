@@ -4,9 +4,8 @@ import { Provider } from 'react-redux'
 import theme from './styles/theme'
 import store from './redux/store'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Header from './components/Header'
-import Footer from './components/Footer'
 import { Contact, Home } from './pages'
+import { Header, Footer, Sidebar } from './components'
 
 function App() {
   return (
@@ -15,6 +14,7 @@ function App() {
         <CssBaseline />
         <BrowserRouter>
           <Header />
+          <Sidebar />
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/contact' element={<Contact />} />

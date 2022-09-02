@@ -1,6 +1,6 @@
 import { Stack, Container, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { Logo, CartLinkIcon } from '.'
 import { HiOutlineMenuAlt3 } from 'react-icons/hi'
 import { useDispatch } from 'react-redux'
@@ -22,7 +22,7 @@ const HeaderContainer = styled(Container)(({ theme }) => ({
   justifyContent: 'space-between',
 }))
 
-const HeaderLink = styled(Link)(({ theme }) => ({
+const HeaderLink = styled(NavLink)(({ theme }) => ({
   color: theme.colorWhite,
   transition: 'all 0.3s ease',
   position: 'relative',
@@ -40,6 +40,9 @@ const HeaderLink = styled(Link)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
     width: 0,
     transition: 'width 0.3s ease',
+  },
+  '&.active': {
+    borderBottom: `2px solid ${theme.palette.primary.main}`,
   },
 }))
 
@@ -78,7 +81,10 @@ const Header = () => {
           </Stack>
           <DesktopHeaderWrapper>
             <Stack direction='row' spacing={2}>
-              <HeaderLink to='/'>
+              <HeaderLink
+                to='/'
+                // className={({ isActive }) => (isActive ? 'active' : '')}
+              >
                 <Typography variant='subtitle1'>Home</Typography>
               </HeaderLink>
               <HeaderLink to='/contact'>

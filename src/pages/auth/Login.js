@@ -1,9 +1,18 @@
-import { Button, Card, Container, TextField, Typography } from '@mui/material'
+import { Card, Container, TextField, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import loginImg from '../../assets/login.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { BsGoogle } from 'react-icons/bs'
 import { appearFromBottom, dropFromTop } from '../../utils/animations'
+import { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { validateEmail, validatePassword } from '../../utils/validation'
+import {
+  signInWithEmailAndPassword,
+  signInWithGoogle,
+} from '../../redux/actions/users'
+import { toast } from 'react-toastify'
+import { LoadingButton } from '@mui/lab'
 
 const Main = styled(Container)(({ theme }) => ({
   minHeight: 'calc(100vh - 16rem)',
@@ -87,7 +96,7 @@ const FormRedirectLink = styled(Link)(({ theme }) => ({
 const OrTextWrapper = styled(Typography)(({ theme }) => ({
   marginTop: '1rem',
 }))
-const LoginButton = styled(Button)(({ theme }) => ({
+const LoginButton = styled(LoadingButton)(({ theme }) => ({
   backgroundColor: theme.lightBlue,
   transition: 'all 0.3s ease',
   ':hover': {
@@ -95,12 +104,51 @@ const LoginButton = styled(Button)(({ theme }) => ({
   },
 }))
 
-const GoogleSignInBtn = styled(Button)(({ theme }) => ({
+const GoogleSignInBtn = styled(LoadingButton)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   marginTop: '1rem',
 }))
 
 const Login = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { pendingSignInWithEmailAndPassword, pendingSignInWithGoogle } =
+    useSelector((state) => state.users)
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    isCheckingFormValidity: false,
+  })
+
+  const handleCheckFormValidation = () => {
+    if (!validateEmail(email) && !validatePassword(password)) {
+      return Promise.resolve(true)
+    } else {
+      return Promise.resolve(false)
+    }
+  }
+
+  const handleInputChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  const handleLoginUser = async (e) => {
+    e.preventDefault()
+    setFormData((prev) => ({ ...prev, isCheckingFormValidity: true }))
+    const isValid = await handleCheckFormValidation()
+
+    if (isValid) {
+      setFormData((prev) => ({ ...prev, isCheckingFormValidity: false }))
+      dispatch(signInWithEmailAndPassword({ email, password, toast, navigate }))
+    }
+  }
+
+  const handleSignInWithGoogle = () => {
+    dispatch(signInWithGoogle({ toast, navigate }))
+  }
+
+  const { email, password, isCheckingFormValidity } = formData
+
   return (
     <Main>
       <LeftWrapper>
@@ -108,23 +156,47 @@ const Login = () => {
       </LeftWrapper>
       <RightWrapper>
         <FormCard>
-          <Form>
+          <Form onSubmit={handleLoginUser}>
             <FormTitle variant='h2'>Login</FormTitle>
             <TextField
-              id='outlined-basic'
+              id='email'
               label='Email'
               variant='outlined'
               fullWidth
               color='secondary'
+              name='email'
+              value={email}
+              onChange={handleInputChange}
+              error={
+                isCheckingFormValidity ? Boolean(validateEmail(email)) : false
+              }
+              helperText={isCheckingFormValidity ? validateEmail(email) : ''}
             />
             <TextField
-              id='outlined-basic'
+              type='password'
+              id='password'
               label='Password'
               variant='outlined'
               fullWidth
               color='secondary'
+              name='password'
+              value={password}
+              onChange={handleInputChange}
+              error={
+                isCheckingFormValidity
+                  ? Boolean(validatePassword(password))
+                  : false
+              }
+              helperText={
+                isCheckingFormValidity ? validatePassword(password) : ''
+              }
             />
-            <LoginButton variant='contained' fullWidth>
+            <LoginButton
+              loading={pendingSignInWithEmailAndPassword}
+              type='submit'
+              variant='contained'
+              fullWidth
+            >
               Login
             </LoginButton>
           </Form>
@@ -138,9 +210,12 @@ const Login = () => {
           <OrTextWrapper variant='subtitle1'>-- or --</OrTextWrapper>
 
           <GoogleSignInBtn
+            loading={pendingSignInWithGoogle}
+            loadingPosition='start'
             variant='contained'
             startIcon={<BsGoogle />}
             fullWidth
+            onClick={handleSignInWithGoogle}
           >
             Google
           </GoogleSignInBtn>

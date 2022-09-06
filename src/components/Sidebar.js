@@ -2,10 +2,12 @@ import { styled } from '@mui/material/styles'
 import { Backdrop, Logo } from '.'
 import { useSelector, useDispatch } from 'react-redux'
 import { Stack, Typography } from '@mui/material'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { ImCross } from 'react-icons/im'
 import { FiLogOut } from 'react-icons/fi'
 import { hideMenu } from '../redux/actions/global'
+import { signOut } from '../redux/actions/users'
+import { toast } from 'react-toastify'
 
 const SidebarMenuWrapper = styled('div')(({ theme, showMenu }) => ({
   height: '100%',
@@ -86,7 +88,12 @@ const SidebarCloseIcon = styled('div')(({ theme }) => ({
 
 const Sidebar = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { showMenu } = useSelector((state) => state.global)
+
+  const handleUserLogout = () => {
+    dispatch(signOut({ navigate, toast }))
+  }
 
   return (
     <>
@@ -123,7 +130,7 @@ const Sidebar = () => {
                 </HeaderLink>
               </TopSidebarLinks>
             </div>
-            <SidebarLogoutContainer>
+            <SidebarLogoutContainer onClick={handleUserLogout}>
               <Typography variant='h4'>Logout</Typography>
               <FiLogOut size={20} />
             </SidebarLogoutContainer>

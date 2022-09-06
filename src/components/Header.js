@@ -1,10 +1,13 @@
 import { Stack, Container, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { Logo, CartLinkIcon } from '.'
 import { HiOutlineMenuAlt3 } from 'react-icons/hi'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { toggleMenu } from '../redux/actions/global'
+import { LoadingButton } from '@mui/lab'
+import { signOut } from '../redux/actions/users'
+import { toast } from 'react-toastify'
 
 const HeaderWrapper = styled('header')(({ theme }) => ({
   height: '8rem',
@@ -58,6 +61,14 @@ const MobileHeaderWrapper = styled(Stack)(({ theme }) => ({
     display: 'flex',
   },
 }))
+const LogoutBtn = styled(LoadingButton)(({ theme }) => ({
+  color: theme.colorWhite,
+  textTransform: 'capitalize',
+  transition: 'all 0.3s ease',
+  ':hover': {
+    color: theme.palette.primary.main,
+  },
+}))
 
 const MenuIcon = styled(HiOutlineMenuAlt3)`
   cursor: pointer;
@@ -65,9 +76,15 @@ const MenuIcon = styled(HiOutlineMenuAlt3)`
 
 const Header = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { pendingSignOut } = useSelector((state) => state.users)
 
   const handleOpenMenu = () => {
     dispatch(toggleMenu())
+  }
+
+  const handleUserLogout = () => {
+    dispatch(signOut({ navigate, toast }))
   }
 
   return (
@@ -93,7 +110,7 @@ const Header = () => {
             </Stack>
           </DesktopHeaderWrapper>
           <DesktopHeaderWrapper>
-            <Stack direction='row' spacing={2}>
+            <Stack direction='row' spacing={2} alignItems='center'>
               <HeaderLink to='/login'>
                 <Typography variant='subtitle1'>Login</Typography>
               </HeaderLink>
@@ -106,6 +123,9 @@ const Header = () => {
               <HeaderLink to='/cart'>
                 <CartLinkIcon />
               </HeaderLink>
+              <LogoutBtn loading={pendingSignOut} onClick={handleUserLogout}>
+                <Typography variant='subtitle1'>Logout</Typography>
+              </LogoutBtn>
             </Stack>
           </DesktopHeaderWrapper>
           <MobileHeaderWrapper direction='row' spacing={2}>

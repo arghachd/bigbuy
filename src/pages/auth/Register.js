@@ -1,14 +1,18 @@
 import { useState } from 'react'
-import { Button, Card, Container, TextField, Typography } from '@mui/material'
+import { Card, Container, TextField, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import registerImg from '../../assets/register.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { appearFromBottom, dropFromTop } from '../../utils/animations'
 import {
   validateConfirmPassword,
   validateEmail,
   validatePassword,
 } from '../../utils/validation'
+import { useDispatch, useSelector } from 'react-redux'
+import { createUserWithEmailAndPassword } from '../../redux/actions/users'
+import { LoadingButton } from '@mui/lab'
+import { toast } from 'react-toastify'
 
 const Main = styled(Container)(({ theme }) => ({
   minHeight: 'calc(100vh - 16rem)',
@@ -78,7 +82,7 @@ const FormRedirectLink = styled(Link)(({ theme }) => ({
 const OrTextWrapper = styled(Typography)(({ theme }) => ({
   marginTop: '1rem',
 }))
-const LoginButton = styled(Button)(({ theme }) => ({
+const LoginButton = styled(LoadingButton)(({ theme }) => ({
   backgroundColor: theme.lightBlue,
   transition: 'all 0.3s ease',
   ':hover': {
@@ -87,6 +91,11 @@ const LoginButton = styled(Button)(({ theme }) => ({
 }))
 
 const Register = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { pendingCreateUserWithEmailAndPassword } = useSelector(
+    (state) => state.users
+  )
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -114,11 +123,12 @@ const Register = () => {
     e.preventDefault()
     setFormData((prev) => ({ ...prev, isCheckingFormValidity: true }))
     const isValid = await handleCheckFormValidation()
-    console.log(isValid)
+
     if (isValid) {
-      console.log('to api', formData)
-    } else {
-      console.log('Please fill all the required fields')
+      setFormData((prev) => ({ ...prev, isCheckingFormValidity: false }))
+      dispatch(
+        createUserWithEmailAndPassword({ email, password, toast, navigate })
+      )
     }
   }
 
@@ -184,7 +194,12 @@ const Register = () => {
                   : ''
               }
             />
-            <LoginButton variant='contained' fullWidth type='submit'>
+            <LoginButton
+              loading={pendingCreateUserWithEmailAndPassword}
+              variant='contained'
+              fullWidth
+              type='submit'
+            >
               Register
             </LoginButton>
           </Form>
